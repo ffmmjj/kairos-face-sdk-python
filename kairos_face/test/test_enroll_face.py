@@ -23,7 +23,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         with self.assertRaises(kairos_face.SettingsNotPresentException):
             kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_path.jpg')
 
-    def test_throws_esception_when_image_is_empty_string(self):
+    def test_throws_exception_when_image_is_empty_string(self):
         with self.assertRaises(ValueError):
             kairos_face.enroll_face(subject_id='subject_id', gallery_name='gallery', image='')
 

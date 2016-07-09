@@ -1,6 +1,6 @@
 from kairos_face import exceptions
-import requests
 from kairos_face import settings
+import requests
 
 _enroll_base_url = settings.base_url + 'enroll'
 
