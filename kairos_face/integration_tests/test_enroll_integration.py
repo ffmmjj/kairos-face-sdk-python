@@ -1,0 +1,35 @@
+import traceback
+
+import kairos_face
+import os
+import unittest
+
+from kairos_face.exceptions import ServiceRequestError
+
+
+class EnrollIntegrationTest(unittest.TestCase):
+    def setUp(self):
+        kairos_face.settings.app_id = os.environ.get('KAIROS_APP_ID')
+        kairos_face.settings.app_key = os.environ.get('KAIROS_APP_KEY')
+
+        # It was not possible to find a reliable, publicly available URL pointing to a face picture with nice quality.
+        # To avoid legal issues, you'l have to set up your own ;)
+        self.face_example_url = os.environ.get('EXAMPLE_FACE_URL')
+
+    def test_image_response_is_returned(self):
+        try:
+            # Try to enroll a male face from a public dataset
+            face_id, attributes = kairos_face.enroll_face(
+                subject_id='integration-test-face',
+                gallery_name='integration-test-gallery',
+                image=self.face_example_url
+            )
+
+            self.assertIsNotNone(face_id)
+            self.assertEqual('M', attributes['gender']['type'])
+        except ServiceRequestError as e:
+            traceback.print_exc()
+            self.fail("This should not be raising an exception...")
+        finally:
+            # TODO un-enroll the image and move this to a tearDown method
+            pass
