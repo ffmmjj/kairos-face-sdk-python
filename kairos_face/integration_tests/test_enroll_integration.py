@@ -18,7 +18,6 @@ class EnrollIntegrationTest(unittest.TestCase):
 
     def test_image_response_is_returned(self):
         try:
-            # Try to enroll a male face from a public dataset
             face_id, attributes = kairos_face.enroll_face(
                 subject_id='integration-test-face',
                 gallery_name='integration-test-gallery',
@@ -31,5 +30,4 @@ class EnrollIntegrationTest(unittest.TestCase):
             traceback.print_exc()
             self.fail("This should not be raising an exception...")
         finally:
-            # TODO un-enroll the image and move this to a tearDown method
-            pass
+            kairos_face.remove_face(subject_id='integration-test-face', gallery_name='integration-test-gallery')
