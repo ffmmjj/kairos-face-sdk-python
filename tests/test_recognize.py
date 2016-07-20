@@ -77,3 +77,24 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
         self.assertEqual(2, len(response['candidates']))
         self.assertTrue('subtest1' in response['candidates'])
         self.assertTrue('elizabeth'in response['candidates'])
+
+    @responses.activate
+    def test_raises_exception_when_face_is_not_recognized(self):
+        response_body = {
+            "images": [{
+                    "time": 6.43752,
+                    "transaction": {
+                            "status": "failure",
+                            "message": "No match found",
+                            "gallery_name": "gallery_name"
+                        },
+                    }]
+                }
+        responses.add(responses.POST, 'https://api.kairos.com/recognize',
+                      status=200,
+                      body=json.dumps(response_body))
+
+        response = kairos_face.recognize_face(gallery_name='gallery_name', image='an_image_path.jpg')
+
+        self.assertIsNone(response['recognized_subject'])
+        self.assertEqual(0, len(response['candidates']))

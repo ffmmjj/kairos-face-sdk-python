@@ -18,10 +18,20 @@ def recognize_face(gallery_name, image, additional_arguments={}):
     if response.status_code != 200 or 'Errors' in json_response:
         raise exceptions.ServiceRequestError(response.status_code, json_response, payload)
 
-    recognized_image = json_response['images'][0]
+    first_response = json_response['images'][0]
+    if first_response['transaction']['status'] == 'failure':
+        return _empty_response()
+
     return {
-        'recognized_subject': recognized_image['transaction']['subject'],
-        'candidates': _extract_candidates(recognized_image['candidates'])
+        'recognized_subject': first_response['transaction']['subject'],
+        'candidates': _extract_candidates(first_response['candidates'])
+    }
+
+
+def _empty_response():
+    return {
+        'recognized_subject': None,
+        'candidates': []
     }
 
 
