@@ -30,7 +30,10 @@ def recognize_face(gallery_name, image, additional_arguments={}):
 
 
 def _subject_from_first_response(first_response):
-    return RecognizedFaceCandidate(first_response['transaction']['subject'], float(first_response['transaction']['confidence']))
+    return RecognizedFaceCandidate(
+        first_response['transaction']['subject'],
+        float(first_response['transaction']['confidence'])
+    )
 
 
 def _extract_candidates(candidates_dict_array):
