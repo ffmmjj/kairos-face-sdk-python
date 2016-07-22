@@ -2,6 +2,8 @@ from kairos_face import exceptions
 from kairos_face import settings
 import requests
 
+from kairos_face.entities import RecognizedFaceCandidate
+
 _recognize_base_url = settings.base_url + 'recognize'
 
 
@@ -18,26 +20,27 @@ def recognize_face(gallery_name, image, additional_arguments={}):
     if response.status_code != 200 or 'Errors' in json_response:
         raise exceptions.ServiceRequestError(response.status_code, json_response, payload)
 
-    first_response = json_response['images'][0]
-    if first_response['transaction']['status'] == 'failure':
-        return _empty_response()
+    first_image = json_response['images'][0]
+    recognized_faces = []
+    if first_image['transaction']['status'] != 'failure':
+        recognized_faces.append(_subject_from_first_response(first_image))
+        recognized_faces.extend(_extract_candidates(first_image['candidates'][1:]))
 
-    return {
-        'recognized_subject': first_response['transaction']['subject'],
-        'candidates': _extract_candidates(first_response['candidates'])
-    }
+    return recognized_faces
 
 
-def _empty_response():
-    return {
-        'recognized_subject': None,
-        'candidates': []
-    }
+def _subject_from_first_response(first_response):
+    return RecognizedFaceCandidate(first_response['transaction']['subject'], float(first_response['transaction']['confidence']))
 
 
 def _extract_candidates(candidates_dict_array):
-    candidate_keys = _flatten([[k for k in c.keys()] for c in candidates_dict_array])
-    return list(set(candidate_keys) - {'enrollment_timestamp'})
+    candidates = []
+    for entry in candidates_dict_array:
+        entry.pop('enrollment_timestamp')
+        subject_name = list(entry.keys())[0]
+        candidates.append(RecognizedFaceCandidate(subject_name, float(entry[subject_name])))
+
+    return sorted(candidates, key=lambda c: c.confidence)
 
 
 def _flatten(candidate_keys):
