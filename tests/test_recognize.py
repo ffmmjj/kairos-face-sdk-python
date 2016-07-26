@@ -15,13 +15,13 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
         kairos_face.settings.app_id = None
 
         with self.assertRaises(kairos_face.SettingsNotPresentException):
-            kairos_face.remove_face(subject_id='sub_id', gallery_name='gallery')
+            kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery')
 
     def test_throws_exception_when_app_key_is_not_set(self):
         kairos_face.settings.app_key = None
 
         with self.assertRaises(kairos_face.SettingsNotPresentException):
-            kairos_face.remove_face(subject_id='sub_id', gallery_name='gallery')
+            kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery')
 
     @mock.patch('kairos_face.requests.post')
     def test_passes_additional_arguments_in_payload(self, post_mock):
@@ -31,7 +31,7 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
             'selector': 'EYES'
         }
 
-        kairos_face.recognize_face(gallery_name='gallery', image='a_image_url.jpg',
+        kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery',
                                    additional_arguments=additional_arguments)
 
         _, kwargs = post_mock.call_args
@@ -71,7 +71,7 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
                       status=200,
                       body=json.dumps(response_body))
 
-        face_candidates_subjects = kairos_face.recognize_face(gallery_name='gallery_name', image='an_image_path.jpg')
+        face_candidates_subjects = kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery_name')
 
         self.assertEqual(2, len(face_candidates_subjects))
         self.assertEqual('test2', face_candidates_subjects[0].subject)
@@ -95,6 +95,6 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
                       status=200,
                       body=json.dumps(response_body))
 
-        face_candidates_subjects = kairos_face.recognize_face(gallery_name='gallery_name', image='an_image_path.jpg')
+        face_candidates_subjects = kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery_name')
 
         self.assertEqual(0, len(face_candidates_subjects))

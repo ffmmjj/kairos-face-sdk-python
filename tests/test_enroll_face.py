@@ -15,23 +15,23 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         kairos_face.settings.app_id = None
 
         with self.assertRaises(kairos_face.SettingsNotPresentException):
-            kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_path.jpg')
+            kairos_face.enroll_face('a_image_path.jpg', subject_id='sub_id', gallery_name='gallery')
 
     def test_throws_exception_when_app_key_is_not_set(self):
         kairos_face.settings.app_key = None
 
         with self.assertRaises(kairos_face.SettingsNotPresentException):
-            kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_path.jpg')
+            kairos_face.enroll_face('a_image_path.jpg', subject_id='sub_id', gallery_name='gallery')
 
     def test_throws_exception_when_image_is_empty_string(self):
         with self.assertRaises(ValueError):
-            kairos_face.enroll_face(subject_id='subject_id', gallery_name='gallery', image='')
+            kairos_face.enroll_face('', subject_id='subject_id', gallery_name='gallery')
 
     @mock.patch('kairos_face.requests.post')
     def test_passes_image_url_in_post_header(self, post_mock):
         post_mock.return_value.status_code = 200
 
-        kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='image')
+        kairos_face.enroll_face('image', subject_id='sub_id', gallery_name='gallery')
 
         args, _ = post_mock.call_args
         self.assertEqual(1, len(args), 'No positional arguments were passed to post request')
@@ -41,7 +41,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
     def test_passes_app_id_and_key_in_post_header(self, post_mock):
         post_mock.return_value.status_code = 200
 
-        kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_path.jpg')
+        kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery')
 
         _, kwargs = post_mock.call_args
         expected_headers = {
@@ -55,7 +55,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
     def test_passes_required_arguments_in_payload_as_json(self, post_mock):
         post_mock.return_value.status_code = 200
 
-        kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_url.jpg')
+        kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery')
 
         _, kwargs = post_mock.call_args
         expected_payload = {
@@ -75,7 +75,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
             'symmetricFill': True
         }
 
-        kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_url.jpg',
+        kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery',
                                 additional_arguments=additional_arguments)
 
         _, kwargs = post_mock.call_args
@@ -92,7 +92,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
                       body=response_body)
 
         with self.assertRaises(kairos_face.ServiceRequestError):
-            kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_url.jpg')
+            kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery')
 
     @responses.activate
     def test_raises_exception_when_http_response_body_contains_error_field(self):
@@ -101,7 +101,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
                       body=response_body)
 
         with self.assertRaises(kairos_face.ServiceRequestError):
-            kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_url.jpg')
+            kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery')
 
     @responses.activate
     def test_returns_face_id_from_kairos_response(self):
@@ -114,7 +114,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         responses.add(responses.POST, 'https://api.kairos.com/enroll', status=200,
                       body=(json.dumps(response_dict)))
 
-        face_id, _ = kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_url.jpg')
+        face_id, _ = kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery')
 
         self.assertEqual('new_face_id', face_id)
 
@@ -131,7 +131,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         responses.add(responses.POST, 'https://api.kairos.com/enroll', status=200,
                       body=json.dumps(response_dict))
 
-        _, attributes = kairos_face.enroll_face(subject_id='sub_id', gallery_name='gallery', image='a_image_url.jpg')
+        _, attributes = kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery')
 
         expected_attributes = {
             'gender': {

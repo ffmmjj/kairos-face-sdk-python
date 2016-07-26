@@ -5,7 +5,7 @@ import requests
 _enroll_base_url = settings.base_url + 'enroll'
 
 
-def enroll_face(subject_id, gallery_name, image, additional_arguments={}):
+def enroll_face(image, subject_id, gallery_name, additional_arguments={}):
     _validate_arguments(gallery_name, image, subject_id)
     auth_headers = {
         'app_id': settings.app_id,

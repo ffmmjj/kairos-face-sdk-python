@@ -7,7 +7,7 @@ from kairos_face.entities import RecognizedFaceCandidate
 _recognize_base_url = settings.base_url + 'recognize'
 
 
-def recognize_face(gallery_name, image, additional_arguments={}):
+def recognize_face(image, gallery_name, additional_arguments={}):
     _validate_settings()
     auth_headers = {
         'app_id': settings.app_id,
