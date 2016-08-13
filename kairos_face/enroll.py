@@ -10,7 +10,7 @@ _enroll_base_url = settings.base_url + 'enroll'
 
 
 def enroll_face(image, subject_id, gallery_name, additional_arguments={}):
-    _validate_arguments(gallery_name, image, subject_id)
+    _validate_arguments(image)
     auth_headers = {
         'app_id': settings.app_id,
         'app_key': settings.app_key
@@ -64,7 +64,7 @@ def _with_bytes_stream(image):
     return base64.b64encode(image.read()).decode('ascii')
 
 
-def _validate_arguments(gallery_name, image, subject_id):
+def _validate_arguments(image):
     if settings.app_id is None:
         raise exceptions.SettingsNotPresentException("Kairos app_id was not set")
     if settings.app_key is None:
