@@ -1,6 +1,9 @@
 from kairos_face import exceptions
 from kairos_face import settings
 import requests
+import base64
+from io import BufferedReader
+from functools import singledispatch
 
 from kairos_face.entities import RecognizedFaceCandidate
 
@@ -52,11 +55,26 @@ def _flatten(candidate_keys):
 
 def _build_payload(gallery_name, image, additional_arguments):
     required_fields = {
-        'image': image,
+        'image': _image_representation(image),
         'gallery_name': gallery_name
     }
 
     return dict(required_fields, **additional_arguments)
+
+
+@singledispatch
+def _image_representation(image):
+    raise TypeError('Expected image to be a string or BufferedReader, received {}'.format(type(image)))
+
+
+@_image_representation.register(str)
+def _with_string(image):
+    return image
+
+
+@_image_representation.register(BufferedReader)
+def _with_bytes_stream(image):
+    return base64.b64encode(image.read()).decode('ascii')
 
 
 def _validate_settings():

@@ -1,5 +1,6 @@
 import json
 import unittest
+from io import BufferedReader
 from unittest import mock
 import responses
 
@@ -22,6 +23,23 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
 
         with self.assertRaises(kairos_face.SettingsNotPresentException):
             kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery')
+
+    @mock.patch('kairos_face.requests.post')
+    def test_passes_required_arguments_in_payload_as_json_when_image_is_file(self, post_mock):
+        post_mock.return_value.status_code = 200
+
+        with mock.patch('builtins.open', mock.mock_open(read_data=str.encode('test'))):
+            with open('/a/image/file.jpg', 'rb') as image_file:
+                image_file.__class__ = BufferedReader
+                kairos_face.recognize_face(image_file, gallery_name='gallery')
+
+        _, kwargs = post_mock.call_args
+        expected_payload = {
+            'image': 'dGVzdA==',
+            'gallery_name': 'gallery'
+        }
+        self.assertTrue('json' in kwargs)
+        self.assertEqual(expected_payload, kwargs['json'])
 
     @mock.patch('kairos_face.requests.post')
     def test_passes_additional_arguments_in_payload(self, post_mock):
