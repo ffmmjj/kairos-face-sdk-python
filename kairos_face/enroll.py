@@ -1,6 +1,6 @@
 import base64
 from functools import singledispatch
-from io import BytesIO
+from io import BufferedReader
 
 from kairos_face import exceptions
 from kairos_face import settings
@@ -51,7 +51,7 @@ def _build_payload(gallery_name, image, subject_id, additional_arguments):
 
 @singledispatch
 def _image_representation(image):
-    raise TypeError('Expected image to be a string or ByteIO, received {}'.format(type(image)))
+    raise TypeError('Expected image to be a string or BufferedReader, received {}'.format(type(image)))
 
 
 @_image_representation.register(str)
@@ -59,7 +59,7 @@ def _with_string(image):
     return image
 
 
-@_image_representation.register(BytesIO)
+@_image_representation.register(BufferedReader)
 def _with_bytes_stream(image):
     return base64.b64encode(image.read()).decode('ascii')
 

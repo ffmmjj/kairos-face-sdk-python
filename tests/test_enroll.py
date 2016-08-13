@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest import mock
 import responses
-from io import BytesIO
+from io import BytesIO, BufferedReader
 
 import kairos_face
 
@@ -74,7 +74,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
 
         with mock.patch('builtins.open', mock.mock_open(read_data=str.encode('test'))):
             with open('/a/image/file.jpg', 'rb') as image_file:
-                image_file.__class__ = BytesIO
+                image_file.__class__ = BufferedReader
                 kairos_face.enroll_face(image_file, subject_id='sub_id', gallery_name='gallery')
 
         _, kwargs = post_mock.call_args
