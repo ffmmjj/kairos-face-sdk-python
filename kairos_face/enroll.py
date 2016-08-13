@@ -1,3 +1,7 @@
+import base64
+from functools import singledispatch
+from io import BytesIO
+
 from kairos_face import exceptions
 from kairos_face import settings
 import requests
@@ -39,10 +43,25 @@ def _percentage_string_to_number(confidence_string):
 
 
 def _build_payload(gallery_name, image, subject_id, additional_arguments):
-    required_fields = {'image': image, 'subject_id': subject_id,
+    required_fields = {'image': _image_representation(image), 'subject_id': subject_id,
                        'gallery_name': gallery_name, 'multiple_faces': False}
 
     return dict(required_fields, **additional_arguments)
+
+
+@singledispatch
+def _image_representation(image):
+    raise TypeError('Expected image to be a string or ByteIO, received {}'.format(type(image)))
+
+
+@_image_representation.register(str)
+def _with_string(image):
+    return image
+
+
+@_image_representation.register(BytesIO)
+def _with_bytes_stream(image):
+    return base64.b64encode(image.read()).decode('ascii')
 
 
 def _validate_arguments(gallery_name, image, subject_id):

@@ -2,6 +2,7 @@ import json
 import unittest
 from unittest import mock
 import responses
+from io import BytesIO
 
 import kairos_face
 
@@ -28,7 +29,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
             kairos_face.enroll_face('', subject_id='subject_id', gallery_name='gallery')
 
     @mock.patch('kairos_face.requests.post')
-    def test_passes_image_url_in_post_header(self, post_mock):
+    def test_passes_api_url_in_post_request(self, post_mock):
         post_mock.return_value.status_code = 200
 
         kairos_face.enroll_face('image', subject_id='sub_id', gallery_name='gallery')
@@ -52,7 +53,7 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         self.assertEqual(expected_headers, kwargs['headers'])
 
     @mock.patch('kairos_face.requests.post')
-    def test_passes_required_arguments_in_payload_as_json(self, post_mock):
+    def test_passes_required_arguments_in_payload_as_json_when_image_is_url(self, post_mock):
         post_mock.return_value.status_code = 200
 
         kairos_face.enroll_face('a_image_url.jpg', subject_id='sub_id', gallery_name='gallery')
@@ -60,6 +61,25 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         _, kwargs = post_mock.call_args
         expected_payload = {
             'image': 'a_image_url.jpg',
+            'subject_id': 'sub_id',
+            'gallery_name': 'gallery',
+            'multiple_faces': False
+        }
+        self.assertTrue('json' in kwargs)
+        self.assertEqual(expected_payload, kwargs['json'])
+
+    @mock.patch('kairos_face.requests.post')
+    def test_passes_required_arguments_in_payload_as_json_when_image_is_file(self, post_mock):
+        post_mock.return_value.status_code = 200
+
+        with mock.patch('builtins.open', mock.mock_open(read_data=str.encode('test'))):
+            with open('/a/image/file.jpg', 'rb') as image_file:
+                image_file.__class__ = BytesIO
+                kairos_face.enroll_face(image_file, subject_id='sub_id', gallery_name='gallery')
+
+        _, kwargs = post_mock.call_args
+        expected_payload = {
+            'image': 'dGVzdA==',
             'subject_id': 'sub_id',
             'gallery_name': 'gallery',
             'multiple_faces': False
