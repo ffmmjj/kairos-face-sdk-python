@@ -5,6 +5,18 @@ Kairos Face Recognition API Python Client Library
 `pip install .` inside the project root directory
 
 ## Usage
+### Setting up the API keys
+The library exposes a *settings* object where the API keys can be set. It should be remarked that the API keys **must be set before** any of the library's functions is used:
+
+```python
+import kairos_face
+
+kairos_face.settings.app_id = <your_app_id_here>
+kairos_face.settings.app_key = <your_app_key_here>
+```
+
+Your API keys can be found in your Kairo's admin dashboard.
+
 ### Enrolling new faces
 A face can be enrolled by passing an image URL or file:
 
