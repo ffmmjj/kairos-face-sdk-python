@@ -8,3 +8,9 @@ class RecognizedFaceCandidate:
 
     def __str__(self):
         return '<Face "{}" with confidence. {}>'.format(self.subject, self.confidence)
+
+
+class KairosFaceGallery:
+    def __init__(self, gallery_name, subject_ids):
+        self.name = gallery_name
+        self.subjects = subject_ids
