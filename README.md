@@ -28,7 +28,7 @@ kairos_face.enroll_face('http://some.server/some-image.jpg', subject_id='subject
 
 # Enrolling from a file
 with open('path/to/a/file.jpg', 'rb') as image_file:
-    kairos_face.enroll_face(image_file, subject_id='subject1', subject_id='subject1', gallery_name='a-gallery')
+    kairos_face.enroll_face(image_file, subject_id='subject1', gallery_name='a-gallery')
 ```
 
 ### Recognizing a face
