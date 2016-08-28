@@ -1,3 +1,5 @@
+[![Build Status](https://snap-ci.com/ffmmjj/kairos-face-sdk-python/branch/master/build_image)](https://snap-ci.com/ffmmjj/kairos-face-sdk-python/branch/master)
+
 # kairos-face-sdk-python
 Kairos Face Recognition API Python Client Library
 
