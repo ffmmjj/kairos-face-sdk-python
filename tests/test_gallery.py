@@ -133,7 +133,7 @@ class KairosApiGetGalleriesListTest(unittest.TestCase):
         self.assertEqual(0, len(galleries_list))
 
     @responses.activate
-    def test_returns_availables_galleries_names(self):
+    def test_returns_available_galleries_names(self):
         response_body = {
             "time": 0.00991,
             "status": "Complete",
