@@ -2,6 +2,7 @@ import json
 import unittest
 from io import BufferedReader
 from unittest import mock
+
 import responses
 
 import kairos_face
@@ -16,13 +17,25 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
         kairos_face.settings.app_id = None
 
         with self.assertRaises(kairos_face.SettingsNotPresentException):
-            kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery')
+            kairos_face.recognize_face('gallery', url='an_image_url.jpg')
 
     def test_throws_exception_when_app_key_is_not_set(self):
         kairos_face.settings.app_key = None
 
         with self.assertRaises(kairos_face.SettingsNotPresentException):
-            kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery')
+            kairos_face.recognize_face('gallery', url='an_image_url.jpg')
+
+    def test_throws_exception_when_url_is_empty_string(self):
+        with self.assertRaises(ValueError):
+            kairos_face.recognize_face('gallery', url='')
+
+    def test_throws_exception_when_file_is_empty_string(self):
+        with self.assertRaises(ValueError):
+            kairos_face.recognize_face('gallery', file='')
+
+    def test_throws_exception_when_both_file_and_url_are_passed(self):
+        with self.assertRaises(ValueError):
+            kairos_face.recognize_face('gallery', url='an_image_url.jpg', file='/path/tp/image.jpg')
 
     @mock.patch('kairos_face.requests.post')
     def test_passes_required_arguments_in_payload_as_json_when_image_is_file(self, post_mock):
@@ -31,7 +44,7 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
         with mock.patch('builtins.open', mock.mock_open(read_data=str.encode('test'))):
             with open('/a/image/file.jpg', 'rb') as image_file:
                 image_file.__class__ = BufferedReader
-                kairos_face.recognize_face(image_file, gallery_name='gallery')
+                kairos_face.recognize_face('gallery', file=image_file)
 
         _, kwargs = post_mock.call_args
         expected_payload = {
@@ -49,7 +62,7 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
             'selector': 'EYES'
         }
 
-        kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery',
+        kairos_face.recognize_face('gallery', url='an_image_url.jpg',
                                    additional_arguments=additional_arguments)
 
         _, kwargs = post_mock.call_args
@@ -89,7 +102,7 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
                       status=200,
                       body=json.dumps(response_body))
 
-        face_candidates_subjects = kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery_name')
+        face_candidates_subjects = kairos_face.recognize_face('gallery_name', url='an_image_url.jpg')
 
         self.assertEqual(2, len(face_candidates_subjects))
         self.assertEqual('test2', face_candidates_subjects[0].subject)
@@ -113,6 +126,6 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
                       status=200,
                       body=json.dumps(response_body))
 
-        face_candidates_subjects = kairos_face.recognize_face('an_image_url.jpg', gallery_name='gallery_name')
+        face_candidates_subjects = kairos_face.recognize_face('gallery_name', url='an_image_url.jpg')
 
         self.assertEqual(0, len(face_candidates_subjects))

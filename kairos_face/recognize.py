@@ -2,21 +2,19 @@ from kairos_face import exceptions
 from kairos_face import settings
 import requests
 import base64
-from io import BufferedReader
-from functools import singledispatch
 
 from kairos_face.entities import RecognizedFaceCandidate
 
 _recognize_base_url = settings.base_url + 'recognize'
 
 
-def recognize_face(image, gallery_name, additional_arguments={}):
-    _validate_settings()
+def recognize_face(gallery_name, url=None, file=None, additional_arguments={}):
+    _validate_settings(url, file)
     auth_headers = {
         'app_id': settings.app_id,
         'app_key': settings.app_key
     }
-    payload = _build_payload(gallery_name, image, additional_arguments)
+    payload = _build_payload(gallery_name, url, file, additional_arguments)
 
     response = requests.post(_recognize_base_url, json=payload, headers=auth_headers)
     json_response = response.json()
@@ -53,32 +51,31 @@ def _flatten(candidate_keys):
     return [val for sublist in candidate_keys for val in sublist]
 
 
-def _build_payload(gallery_name, image, additional_arguments):
+def _build_payload(gallery_name, url, file, additional_arguments):
+    if file is not None:
+        image = _extract_base64_contents(file)
+    else:
+        image = url
+
     required_fields = {
-        'image': _image_representation(image),
+        'image': image,
         'gallery_name': gallery_name
     }
 
     return dict(required_fields, **additional_arguments)
 
 
-@singledispatch
-def _image_representation(image):
-    raise TypeError('Expected image to be a string or BufferedReader, received {}'.format(type(image)))
+def _extract_base64_contents(image_path):
+    with open(image_path, 'rb') as fp:
+        return base64.b64encode(fp.read()).decode('ascii')
 
 
-@_image_representation.register(str)
-def _with_string(image):
-    return image
-
-
-@_image_representation.register(BufferedReader)
-def _with_bytes_stream(image):
-    return base64.b64encode(image.read()).decode('ascii')
-
-
-def _validate_settings():
+def _validate_settings(url, file):
     if settings.app_id is None:
         raise exceptions.SettingsNotPresentException("Kairos app_id was not set")
     if settings.app_key is None:
         raise exceptions.SettingsNotPresentException("Kairos app_key was not set")
+    if not file and not url:
+        raise ValueError('An image file or valid URL must be passed')
+    if file and url:
+        raise ValueError('Cannot receive both a file and URL as arguments')
