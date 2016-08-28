@@ -19,9 +19,9 @@ class EnrollIntegrationTest(unittest.TestCase):
     def test_image_response_is_returned(self):
         try:
             face_id, attributes = kairos_face.enroll_face(
-                subject_id='integration-test-face',
-                gallery_name='integration-test-gallery',
-                image=self.face_example_url
+                'integration-test-face',
+                'integration-test-gallery',
+                url=self.face_example_url
             )
 
             self.assertIsNotNone(face_id)

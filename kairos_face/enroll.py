@@ -1,6 +1,4 @@
 import base64
-from functools import singledispatch
-from io import BufferedReader
 
 from kairos_face import exceptions
 from kairos_face import settings
@@ -9,14 +7,14 @@ import requests
 _enroll_base_url = settings.base_url + 'enroll'
 
 
-def enroll_face(image, subject_id, gallery_name, additional_arguments={}):
-    _validate_arguments(image)
+def enroll_face(subject_id, gallery_name, url=None, file=None, additional_arguments={}):
+    _validate_arguments(file, url)
     auth_headers = {
         'app_id': settings.app_id,
         'app_key': settings.app_key
     }
 
-    payload = _build_payload(gallery_name, image, subject_id, additional_arguments)
+    payload = _build_payload(subject_id, gallery_name, url, file, additional_arguments)
 
     response = requests.post(_enroll_base_url, json=payload, headers=auth_headers)
     json_response = response.json()
@@ -42,32 +40,29 @@ def _percentage_string_to_number(confidence_string):
     return float(confidence_string.replace('%', '')) / 100.0
 
 
-def _build_payload(gallery_name, image, subject_id, additional_arguments):
-    required_fields = {'image': _image_representation(image), 'subject_id': subject_id,
+def _build_payload(subject_id, gallery_name, url, file, additional_arguments):
+    if file is not None:
+        image = _extract_base64_contents(file)
+    else:
+        image = url
+    required_fields = {'image': image, 'subject_id': subject_id,
                        'gallery_name': gallery_name, 'multiple_faces': False}
 
     return dict(required_fields, **additional_arguments)
 
 
-@singledispatch
-def _image_representation(image):
-    raise TypeError('Expected image to be a string or BufferedReader, received {}'.format(type(image)))
-
-
-@_image_representation.register(str)
-def _with_string(image):
+def _extract_base64_contents(file):
+    with open(file, 'rb') as fp:
+        image = base64.b64encode(fp.read()).decode('ascii')
     return image
 
 
-@_image_representation.register(BufferedReader)
-def _with_bytes_stream(image):
-    return base64.b64encode(image.read()).decode('ascii')
-
-
-def _validate_arguments(image):
+def _validate_arguments(file, url):
     if settings.app_id is None:
-        raise exceptions.SettingsNotPresentException("Kairos app_id was not set")
+        raise exceptions.SettingsNotPresentException('Kairos app_id was not set')
     if settings.app_key is None:
-        raise exceptions.SettingsNotPresentException("Kairos app_key was not set")
-    if not image:
-        raise ValueError("image cannot be empty")
+        raise exceptions.SettingsNotPresentException('Kairos app_key was not set')
+    if file is None and not url:
+        raise ValueError('An image file or valid URL must be passed')
+    if file is not None and url:
+        raise ValueError('Cannot receive both a file and URL as arguments')
