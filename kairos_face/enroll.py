@@ -62,7 +62,7 @@ def _validate_arguments(file, url):
         raise exceptions.SettingsNotPresentException('Kairos app_id was not set')
     if settings.app_key is None:
         raise exceptions.SettingsNotPresentException('Kairos app_key was not set')
-    if file is None and not url:
+    if not file and not url:
         raise ValueError('An image file or valid URL must be passed')
-    if file is not None and url:
+    if file and url:
         raise ValueError('Cannot receive both a file and URL as arguments')

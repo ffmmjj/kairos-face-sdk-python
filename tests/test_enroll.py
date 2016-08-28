@@ -27,6 +27,10 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             kairos_face.enroll_face('subject_id', 'gallery', url='')
 
+    def test_throws_exception_when_file_is_empty_string(self):
+        with self.assertRaises(ValueError):
+            kairos_face.enroll_face('subject_id', 'gallery', file='')
+
     def test_throws_exception_when_both_file_and_url_are_passed(self):
         with self.assertRaises(ValueError):
             kairos_face.enroll_face('subject_id', 'gallery',
