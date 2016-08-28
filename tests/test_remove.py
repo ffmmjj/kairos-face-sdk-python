@@ -21,6 +21,14 @@ class KairosApiRemoveFaceTest(unittest.TestCase):
         with self.assertRaises(kairos_face.SettingsNotPresentException):
             kairos_face.remove_face(subject_id='sub_id', gallery_name='gallery')
 
+    def test_throws_exception_when_subject_id_is_empty_string(self):
+        with self.assertRaises(ValueError):
+            kairos_face.remove_face(subject_id='', gallery_name='gallery')
+
+    def test_throws_exception_when_gallery_name_is_empty_string(self):
+        with self.assertRaises(ValueError):
+            kairos_face.remove_face(subject_id='sub_id', gallery_name='')
+
     @responses.activate
     def test_remove_face_that_does_not_exist_raises_exception(self):
         response_body = '{"Errors":[{"ErrCode":5003,"Message":"subject id was not found"}]}'

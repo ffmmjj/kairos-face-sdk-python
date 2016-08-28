@@ -1,4 +1,4 @@
-from kairos_face import exceptions
+from kairos_face import exceptions, validate_settings
 from kairos_face import settings
 import requests
 
@@ -6,7 +6,9 @@ _remove_base_url = settings.base_url + 'gallery/remove_subject'
 
 
 def remove_face(subject_id, gallery_name):
-    _validate_settings()
+    validate_settings()
+    _validate_arguments_presence(gallery_name, subject_id)
+
     auth_headers = {
         'app_id': settings.app_id,
         'app_key': settings.app_key
@@ -22,15 +24,15 @@ def remove_face(subject_id, gallery_name):
     return json_response
 
 
+def _validate_arguments_presence(gallery_name, subject_id):
+    if not subject_id:
+        raise ValueError('A subject ID must be passed')
+    if not gallery_name:
+        raise ValueError('A gallery name must be passed')
+
+
 def _build_payload(gallery_name, subject_id):
     return {
         'gallery_name': gallery_name,
         'subject_id': subject_id
     }
-
-
-def _validate_settings():
-    if settings.app_id is None:
-        raise exceptions.SettingsNotPresentException("Kairos app_id was not set")
-    if settings.app_key is None:
-        raise exceptions.SettingsNotPresentException("Kairos app_key was not set")

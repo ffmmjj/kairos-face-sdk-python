@@ -1,14 +1,18 @@
 import base64
 
+import requests
+
 from kairos_face import exceptions
 from kairos_face import settings
-import requests
+from kairos_face.utils import validate_file_and_url_presence, validate_settings
 
 _enroll_base_url = settings.base_url + 'enroll'
 
 
 def enroll_face(subject_id, gallery_name, url=None, file=None, additional_arguments={}):
-    _validate_arguments(file, url)
+    validate_settings()
+    validate_file_and_url_presence(file, url)
+
     auth_headers = {
         'app_id': settings.app_id,
         'app_key': settings.app_key
@@ -55,14 +59,3 @@ def _extract_base64_contents(file):
     with open(file, 'rb') as fp:
         image = base64.b64encode(fp.read()).decode('ascii')
     return image
-
-
-def _validate_arguments(file, url):
-    if settings.app_id is None:
-        raise exceptions.SettingsNotPresentException('Kairos app_id was not set')
-    if settings.app_key is None:
-        raise exceptions.SettingsNotPresentException('Kairos app_key was not set')
-    if not file and not url:
-        raise ValueError('An image file or valid URL must be passed')
-    if file and url:
-        raise ValueError('Cannot receive both a file and URL as arguments')

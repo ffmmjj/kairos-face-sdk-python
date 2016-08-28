@@ -1,6 +1,6 @@
 import requests
 
-from kairos_face import exceptions
+from kairos_face import exceptions, validate_settings
 from kairos_face import settings
 from kairos_face.entities import KairosFaceGallery
 
@@ -9,7 +9,8 @@ _galleries_list_url = settings.base_url + 'gallery/list_all'
 
 
 def get_gallery(gallery_name):
-    _validate_arguments(gallery_name)
+    validate_settings()
+    _validate_gallery_name(gallery_name)
 
     auth_headers = {
         'app_id': settings.app_id,
@@ -41,8 +42,7 @@ def get_galleries_names_list():
     return json_response['gallery_ids']
 
 
-def _validate_arguments(gallery_name):
-    _validate_settings()
+def _validate_gallery_name(gallery_name):
     if not gallery_name:
         raise ValueError("gallery_name cannot be empty")
 
