@@ -122,7 +122,7 @@ class KairosApiGetGalleriesListTest(unittest.TestCase):
         response_body = {
             "time": 0.00991,
             "status": "Complete",
-            "gallery_names": []
+            "gallery_ids": []
         }
         responses.add(responses.POST, 'https://api.kairos.com/gallery/list_all',
                       status=200,
