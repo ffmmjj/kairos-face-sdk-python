@@ -1,5 +1,3 @@
-[![Build Status](https://snap-ci.com/ffmmjj/kairos-face-sdk-python/branch/master/build_image)](https://snap-ci.com/ffmmjj/kairos-face-sdk-python/branch/master)
-
 # kairos-face-sdk-python
 Kairos Face Recognition API Python Client Library
 
@@ -19,54 +17,101 @@ kairos_face.settings.app_key = <your_app_key_here>
 
 Your API keys can be found in your Kairo's admin dashboard.
 
-### Enrolling new faces
+## Enrolling new faces
 A face can be enrolled by passing an image URL or file:
 
 ```python
 import kairos_face
 
 # Enrolling from a URL
-kairos_face.enroll_face('http://some.server/some-image.jpg', subject_id='subject1', gallery_name='a-gallery')
+kairos_face.enroll_face(url='http://some.server/some-image.jpg', subject_id='subject1', gallery_name='a-gallery')
 
 # Enrolling from a file
-with open('path/to/a/file.jpg', 'rb') as image_file:
-    kairos_face.enroll_face(image_file, subject_id='subject1', gallery_name='a-gallery')
+kairos_face.enroll_face(file=image_file, subject_id='subject1', gallery_name='a-gallery')
 ```
 
-### Recognizing a face
-The API can identify a face from a image passed as an URL or a file. The function returns a list of **RecognizedFaceCandidate** instances, each one having a subject ID and a confidence level:
+## Detect a face
+The API can detect a face from a image passed as an URL or a file. 
+
+```python
+import kairos_face
+
+# Detect from an URL
+recognized_faces = kairos_face.detect_face(url='http://some.server/some-image.jpg', gallery_name='a-gallery')
+
+# Detect from a file
+recognized_faces = kairos_face.detect_face(file=local_image_file, gallery_name='a-gallery')
+```
+
+## Recognizing a face
+The API can identify a face in an existing gallery from a image passed as an URL or a file. 
 
 ```python
 import kairos_face
 
 # Recognizing from an URL
-recognized_faces = kairos_face.recognize_face('http://some.server/some-image.jpg', gallery_name='a-gallery')
+recognized_faces = kairos_face.recognize_face(url='http://some.server/some-image.jpg', gallery_name='a-gallery')
 
-# Enrolling from a file
-with open('path/to/a/file.jpg', 'rb') as image_file:
-    recognized_faces = kairos_face.recognize_face('http://some.server/some-image.jpg', gallery_name='a-gallery')
+# Recognizing from a file
+recognized_faces = kairos_face.recognize_face(file=local_image_file, gallery_name='a-gallery')
+```
+## Verify a face
+The API can verify that a face belongs to a specific person in an existing gallery from a image passed as an URL or a file. 
 
-# Printing the recognized face candidates info
-for face_candidate in recognized_faces:
-    print('{}: {}'.format(face_candidate.subject, face_candidate.confidence)
+```python
+import kairos_face
+
+# Verify from an URL
+recognized_faces = kairos_face.verify_face(url='http://some.server/some-image.jpg', gallery_name='a-gallery')
+
+# Verify from a file
+recognized_faces = kairos_face.verify_face(file=local_image_file, gallery_name='a-gallery')
 ```
 
-### Galleries
-Face subjects are grouped in galleries. A list of the current galleries' names can be retrieved by calling **get_galleries_names_list()**.
-Individual galleries can be retrieved by passing their names to **get_gallery()** and each gallery has a list of the subjects that were enrolled to them:
+## Galleries
+Face subjects are grouped in galleries. 
+
+#### Get Galleries
+List all galleries that have been created.
 
 ```python
 import kairos_face
 
 galleries_list = kairos_face.get_galleries_names_list()
+```
 
-for gallery_name in galleries_list:
-    gallery = kairos_face.get_gallery(gallery_name)
+#### Get Gallery
+Get a list of subjects in a specific gallery.
+
+```python
+import kairos_face
+
+gallery_subjects = kairos_face.get_gallery('a-gallery')
+```
+
+#### Remove Gallery
+Remove a gallery and all its subjects.
+
+```python
+import kairos_face
+
+remove_gallery = kairos_face.remove_gallery('a-gallery')
+```
+
+There are special methods which combine to render each gallery, followed by a list of subjects enrolled in that gallery:
+
+```python
+import kairos_face
+
+galleries_object = kairos_face.get_galleries_names_object()
+
+for gallery_name in galleries_object:
+    gallery = kairos_face.get_gallery_object(gallery_name)
     print('Gallery name: {}'.format(gallery.name))
     print('Gallery subjects: {}'.format(gallery.subjects))
 ```
 
-### Removing an enrolled face
+## Removing an enrolled face
 Previously enrolled faces can be removed from a gallery:
 
 ```python
@@ -74,3 +119,4 @@ import kairos_face
 
 kairos_face.remove_face(subject_id='subject1', gallery_name='a-gallery')
 ```
+
