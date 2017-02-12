@@ -1,15 +1,13 @@
 import base64
-
 import requests
-
 from kairos_face import exceptions
 from kairos_face import settings
 from kairos_face.utils import validate_file_and_url_presence, validate_settings
 
-_enroll_base_url = settings.base_url + 'enroll'
+_verify_base_url = settings.base_url + 'verify'
 
 
-def enroll_face(subject_id, gallery_name, url=None, file=None, additional_arguments={}):
+def verify_face(subject_id, gallery_name, url=None, file=None, additional_arguments={}):
     validate_settings()
     validate_file_and_url_presence(file, url)
 
@@ -20,7 +18,7 @@ def enroll_face(subject_id, gallery_name, url=None, file=None, additional_argume
 
     payload = _build_payload(subject_id, gallery_name, url, file, additional_arguments)
 
-    response = requests.post(_enroll_base_url, json=payload, headers=auth_headers)
+    response = requests.post(_verify_base_url, json=payload, headers=auth_headers)
     json_response = response.json()
     if response.status_code != 200 or 'Errors' in json_response:
         raise exceptions.ServiceRequestError(response.status_code, json_response, payload)
@@ -34,7 +32,7 @@ def _build_payload(subject_id, gallery_name, url, file, additional_arguments):
     else:
         image = url
     required_fields = {'image': image, 'subject_id': subject_id,
-                       'gallery_name': gallery_name, 'multiple_faces': False}
+                       'gallery_name': gallery_name}
 
     return dict(required_fields, **additional_arguments)
 
