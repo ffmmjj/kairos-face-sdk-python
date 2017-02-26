@@ -99,5 +99,3 @@ def get_gallery_object(gallery_name):
 def _validate_gallery_name(gallery_name):
     if not gallery_name:
         raise ValueError("gallery_name cannot be empty")
-
-

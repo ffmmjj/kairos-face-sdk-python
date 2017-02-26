@@ -26,7 +26,7 @@ class EnrollIntegrationTest(unittest.TestCase):
 
             self.assertIsNotNone(face_id)
             self.assertEqual('M', attributes['gender']['type'])
-        except ServiceRequestError as e:
+        except ServiceRequestError:
             traceback.print_exc()
             self.fail("This should not be raising an exception...")
         finally:
