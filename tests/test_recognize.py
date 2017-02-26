@@ -104,14 +104,20 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
 
         face_candidates_subjects = kairos_face.recognize_face('gallery_name', url='an_image_url.jpg')
 
-        self.assertEqual(2, len(face_candidates_subjects))
-        self.assertEqual('test2', face_candidates_subjects[0].subject)
-        self.assertEqual(0.802138030529022, face_candidates_subjects[0].confidence)
-        self.assertEqual('elizabeth', face_candidates_subjects[1].subject)
-        self.assertEqual(0.602138030529022, face_candidates_subjects[1].confidence)
+        self.assertEqual(2, len(face_candidates_subjects['images'][0]['candidates']))
+
+        image_response = face_candidates_subjects['images'][0]
+        self.assertEquals('Complete', image_response['transaction']['status'])
+
+        candidates = image_response['candidates']
+        self.assertEquals(2, len(candidates))
+        self.assertIn('test2', candidates[0])
+        self.assertIn('0.802138030529022', candidates[0].values())
+        self.assertIn('elizabeth', candidates[1])
+        self.assertIn('0.602138030529022', candidates[1].values())
 
     @responses.activate
-    def test_returns_empty_array_when_face_is_not_recognized(self):
+    def test_returns_transaction_failure_when_face_is_not_recognized(self):
         response_body = {
             "images": [{
                     "time": 6.43752,
@@ -128,4 +134,8 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
 
         face_candidates_subjects = kairos_face.recognize_face('gallery_name', url='an_image_url.jpg')
 
-        self.assertEqual(0, len(face_candidates_subjects))
+        self.assertEquals(1, len(face_candidates_subjects['images']))
+
+        image_response = face_candidates_subjects['images'][0]
+        self.assertEquals('failure', image_response['transaction']['status'])
+        self.assertEquals('No match found', image_response['transaction']['message'])

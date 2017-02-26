@@ -141,9 +141,9 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         responses.add(responses.POST, 'https://api.kairos.com/enroll', status=200,
                       body=(json.dumps(response_dict)))
 
-        face_id, _ = kairos_face.enroll_face('sub_id', 'gallery', url='a_image_url.jpg')
+        actual_response = kairos_face.enroll_face('sub_id', 'gallery', url='a_image_url.jpg')
 
-        self.assertEqual('new_face_id', face_id)
+        self.assertEqual('new_face_id', actual_response['images'][0]['transaction']['face_id'])
 
     @responses.activate
     def test_returns_image_attributes_from_kairos_response(self):
@@ -158,12 +158,12 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         responses.add(responses.POST, 'https://api.kairos.com/enroll', status=200,
                       body=json.dumps(response_dict))
 
-        _, attributes = kairos_face.enroll_face('sub_id', 'gallery', url='a_image_url.jpg')
+        actual_response = kairos_face.enroll_face('sub_id', 'gallery', url='a_image_url.jpg')
 
         expected_attributes = {
             'gender': {
                 'type': 'F',
-                'confidence': 0.8
+                'confidence': '80%'
             }
         }
-        self.assertEqual(expected_attributes, attributes)
+        self.assertEqual(expected_attributes, actual_response['images'][0]['attributes'])

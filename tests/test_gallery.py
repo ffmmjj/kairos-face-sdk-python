@@ -61,23 +61,6 @@ class KairosApiGalleryTest(unittest.TestCase):
             kairos_face.get_gallery('non-existing-gallery')
 
     @responses.activate
-    def test_returned_gallery_has_gallery_name(self):
-        response_body = {
-            "time": 0.00991,
-            "status": "Complete",
-            "subject_ids": [
-                "subject1"
-            ]
-        }
-        responses.add(responses.POST, 'https://api.kairos.com/gallery/view',
-                      status=200,
-                      body=json.dumps(response_body))
-
-        gallery = kairos_face.get_gallery('a-gallery')
-
-        self.assertEqual('a-gallery', gallery.name)
-
-    @responses.activate
     def test_returned_gallery_has_face_subjects_list(self):
         response_body = {
               "time": 0.00991,
@@ -92,12 +75,13 @@ class KairosApiGalleryTest(unittest.TestCase):
                       status=200,
                       body=json.dumps(response_body))
 
-        gallery = kairos_face.get_gallery('a-gallery')
+        actual_response = kairos_face.get_gallery('a-gallery')
 
-        self.assertEqual(3, len(gallery.subjects))
-        self.assertTrue('subject1' in gallery.subjects)
-        self.assertTrue('subject2' in gallery.subjects)
-        self.assertTrue('subject3' in gallery.subjects)
+        self.assertEqual('Complete', actual_response['status'])
+        self.assertEqual(3, len(actual_response['subject_ids']))
+        self.assertTrue('subject1' in actual_response['subject_ids'])
+        self.assertTrue('subject2' in actual_response['subject_ids'])
+        self.assertTrue('subject3' in actual_response['subject_ids'])
 
 
 class KairosApiGetGalleriesListTest(unittest.TestCase):
@@ -128,9 +112,9 @@ class KairosApiGetGalleriesListTest(unittest.TestCase):
                       status=200,
                       body=json.dumps(response_body))
 
-        galleries_list = kairos_face.get_galleries_names_list()
+        actual_response = kairos_face.get_galleries_names_list()
 
-        self.assertEqual(0, len(galleries_list))
+        self.assertEqual(0, len(actual_response['gallery_ids']))
 
     @responses.activate
     def test_returns_available_galleries_names(self):
@@ -146,8 +130,9 @@ class KairosApiGetGalleriesListTest(unittest.TestCase):
                       status=200,
                       body=json.dumps(response_body))
 
-        galleries_list = kairos_face.get_galleries_names_list()
+        actual_response = kairos_face.get_galleries_names_list()
 
-        self.assertEqual(2, len(galleries_list))
-        self.assertTrue('gallery1' in galleries_list)
-        self.assertTrue('gallery2' in galleries_list)
+        self.assertEquals('Complete', actual_response['status'])
+        self.assertEqual(2, len(actual_response['gallery_ids']))
+        self.assertTrue('gallery1' in actual_response['gallery_ids'])
+        self.assertTrue('gallery2' in actual_response['gallery_ids'])
