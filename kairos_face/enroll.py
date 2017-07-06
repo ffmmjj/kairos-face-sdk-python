@@ -1,7 +1,6 @@
 import base64
 
 import requests
-import numpy as np
 from kairos_face import exceptions
 from kairos_face import settings
 from kairos_face.utils import validate_file_and_url_presence, validate_settings
