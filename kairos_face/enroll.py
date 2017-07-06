@@ -9,7 +9,7 @@ from kairos_face.utils import validate_file_and_url_presence, validate_settings
 _enroll_base_url = settings.base_url + 'enroll'
 
 
-def enroll_face(subject_id, gallery_name, url=None, file=None, imgframe=None multiple_faces=False, additional_arguments={}):
+def enroll_face(subject_id, gallery_name, url=None, file=None, imgframe=None, multiple_faces=False, additional_arguments={}):
     validate_settings()
     validate_file_and_url_presence(file, url)
 
