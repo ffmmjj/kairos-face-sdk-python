@@ -100,6 +100,24 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
         self.assertEqual(expected_payload, kwargs['json'])
 
     @mock.patch('kairos_face.requests.post')
+    def test_passes_multiple_faces_argument_in_payload_when_flag_is_set(self, post_mock):
+        post_mock.return_value.status_code = 200
+
+        m = mock.mock_open(read_data=str.encode('test'))
+        with mock.patch('builtins.open', m, create=True):
+            kairos_face.enroll_face('sub_id', 'gallery', file='/a/image/file.jpg', multiple_faces=True)
+
+        _, kwargs = post_mock.call_args
+        expected_payload = {
+            'image': 'dGVzdA==',
+            'subject_id': 'sub_id',
+            'gallery_name': 'gallery',
+            'multiple_faces': True
+        }
+        self.assertTrue('json' in kwargs)
+        self.assertEqual(expected_payload, kwargs['json'])
+
+    @mock.patch('kairos_face.requests.post')
     def test_passes_additional_arguments_in_payload(self, post_mock):
         post_mock.return_value.status_code = 200
         additional_arguments = {
