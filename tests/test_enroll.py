@@ -36,6 +36,11 @@ class KairosApiEnrollFacesTest(unittest.TestCase):
             kairos_face.enroll_face('subject_id', 'gallery',
                                     url='an_image_url.jpg', file='/path/tp/image.jpg')
 
+    def test_throws_exception_when_both_file_and_imgframe_are_passed(self):
+        with self.assertRaises(ValueError):
+            kairos_face.enroll_face('subject_id', 'gallery',
+                                    url='an_image_url.jpg', base64_image_contents='aBase64EncodedImageContents')
+
     @mock.patch('kairos_face.requests.post')
     def test_passes_api_url_in_post_request(self, post_mock):
         post_mock.return_value.status_code = 200

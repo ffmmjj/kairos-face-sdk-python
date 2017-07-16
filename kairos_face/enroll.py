@@ -9,7 +9,9 @@ from kairos_face.utils import validate_file_and_url_presence, validate_settings
 _enroll_base_url = settings.base_url + 'enroll'
 
 
-def enroll_face(subject_id, gallery_name, url=None, file=None, imgframe=None, multiple_faces=False, additional_arguments={}):
+def enroll_face(subject_id, gallery_name,
+                url=None, file=None, base64_image_contents=None,
+                multiple_faces=False, additional_arguments={}):
     validate_settings()
     validate_file_and_url_presence(file, url)
 
@@ -18,7 +20,8 @@ def enroll_face(subject_id, gallery_name, url=None, file=None, imgframe=None, mu
         'app_key': settings.app_key
     }
 
-    payload = _build_payload(subject_id, gallery_name, url, file, imgframe, multiple_faces, additional_arguments)
+    payload = _build_payload(subject_id, gallery_name, url, file,
+                             base64_image_contents, multiple_faces, additional_arguments)
 
     response = requests.post(_enroll_base_url, json=payload, headers=auth_headers)
     json_response = response.json()
