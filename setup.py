@@ -1,4 +1,6 @@
-from distutils.core import setup
+# from distutils.core import setup
+from setuptools import setup
+
 
 setup(
     name='kairos_face_recognition_lib',
