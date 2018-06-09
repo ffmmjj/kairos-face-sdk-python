@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='kairos_face_recognition_lib',
-    version='0.2.1',
+    version='0.3.0',
     packages=['kairos_face'],
     url='https://github.com/ffmmjj/kairos-face-sdk-python',
     license='MIT',

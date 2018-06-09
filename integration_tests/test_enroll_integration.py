@@ -9,9 +9,6 @@ from kairos_face.exceptions import ServiceRequestError
 
 class EnrollIntegrationTest(unittest.TestCase):
     def setUp(self):
-        kairos_face.settings.app_id = os.environ.get('KAIROS_APP_ID')
-        kairos_face.settings.app_key = os.environ.get('KAIROS_APP_KEY')
-
         # It was not possible to find a reliable, publicly available URL pointing to a face picture
         # with nice quality.
         # To avoid legal issues, you'l have to set up your own ;)
