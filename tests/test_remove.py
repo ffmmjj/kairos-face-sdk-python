@@ -53,5 +53,5 @@ class KairosApiRemoveFaceTest(unittest.TestCase):
 
         response = kairos_face.remove_face(gallery_name='gallery_name', subject_id='existing_face')
 
-        self.assertEqual("Complete", response['status'])
+        self.assertEqual('Complete', response['status'])
         self.assertTrue('message' in response)

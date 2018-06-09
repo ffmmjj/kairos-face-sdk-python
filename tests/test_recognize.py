@@ -75,24 +75,24 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
     @responses.activate
     def test_returns_matching_images(self):
         response_body = {
-            "images": [
+            'images': [
                 {
-                    "time": 2.86091,
-                    "transaction":
+                    'time': 2.86091,
+                    'transaction':
                     {
-                        "status": "Complete",
-                        "subject": "test2",
-                        "confidence": "0.802138030529022",
-                        "gallery_name": "gallerytest1",
+                        'status': 'Complete',
+                        'subject': 'test2',
+                        'confidence': '0.802138030529022',
+                        'gallery_name': 'gallerytest1',
                     },
-                    "candidates": [
+                    'candidates': [
                         {
-                          "test2": "0.802138030529022",
-                          "enrollment_timestamp": "1416850761"
+                          'test2': '0.802138030529022',
+                          'enrollment_timestamp': '1416850761'
                         },
                         {
-                          "elizabeth": "0.602138030529022",
-                          "enrollment_timestamp": "1417207485"
+                          'elizabeth': '0.602138030529022',
+                          'enrollment_timestamp': '1417207485'
                         }
                     ]
                 }
@@ -119,12 +119,12 @@ class KairosApiRecognizeFaceTest(unittest.TestCase):
     @responses.activate
     def test_returns_transaction_failure_when_face_is_not_recognized(self):
         response_body = {
-            "images": [{
-                    "time": 6.43752,
-                    "transaction": {
-                            "status": "failure",
-                            "message": "No match found",
-                            "gallery_name": "gallery_name"
+            'images': [{
+                    'time': 6.43752,
+                    'transaction': {
+                            'status': 'failure',
+                            'message': 'No match found',
+                            'gallery_name': 'gallery_name'
                         },
                     }]
                 }

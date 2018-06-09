@@ -52,7 +52,7 @@ class KairosApiGalleryTest(unittest.TestCase):
 
     @responses.activate
     def test_getting_non_existing_gallery_raises_an_exception(self):
-        response_body = {"Errors": [{"ErrCode": 5004, "Message": "gallery name not found"}]}
+        response_body = {'Errors': [{'ErrCode': 5004, 'Message': 'gallery name not found'}]}
         responses.add(responses.POST, 'https://api.kairos.com/gallery/view',
                       status=200,
                       body=json.dumps(response_body))
@@ -63,12 +63,12 @@ class KairosApiGalleryTest(unittest.TestCase):
     @responses.activate
     def test_returned_gallery_has_face_subjects_list(self):
         response_body = {
-              "time": 0.00991,
-              "status": "Complete",
-              "subject_ids": [
-                "subject1",
-                "subject2",
-                "subject3"
+              'time': 0.00991,
+              'status': 'Complete',
+              'subject_ids': [
+                'subject1',
+                'subject2',
+                'subject3'
               ]
         }
         responses.add(responses.POST, 'https://api.kairos.com/gallery/view',
@@ -104,9 +104,9 @@ class KairosApiGetGalleriesListTest(unittest.TestCase):
     @responses.activate
     def test_returns_empty_list_when_no_galleries_are_present(self):
         response_body = {
-            "time": 0.00991,
-            "status": "Complete",
-            "gallery_ids": []
+            'time': 0.00991,
+            'status': 'Complete',
+            'gallery_ids': []
         }
         responses.add(responses.POST, 'https://api.kairos.com/gallery/list_all',
                       status=200,
@@ -119,9 +119,9 @@ class KairosApiGetGalleriesListTest(unittest.TestCase):
     @responses.activate
     def test_returns_available_galleries_names(self):
         response_body = {
-            "time": 0.00991,
-            "status": "Complete",
-            "gallery_ids": [
+            'time': 0.00991,
+            'status': 'Complete',
+            'gallery_ids': [
                 'gallery1',
                 'gallery2'
             ]
